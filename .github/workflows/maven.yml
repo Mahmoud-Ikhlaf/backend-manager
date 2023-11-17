@@ -8,6 +8,7 @@
 
 name: CI/CD Workflow
 
+# Will execute this when we push to master, make a pull request to master or when we run it manually.
 on:
   workflow_dispatch:
   push:
@@ -15,10 +16,22 @@ on:
   pull_request:
     branches: [ "master" ]
 
+# Jobs
 jobs:
+# Build job
+## Builds the project and adds a temporary database for the build
   build:
-
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: backend
+        ports:
+          - 5433:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
     - uses: actions/checkout@v3
@@ -29,5 +42,19 @@ jobs:
         distribution: 'oracle'
         cache: maven
     - name: Build with Maven
-      run: mvn clean install 
+      run: mvn clean install -DskipTests
 
+# Executes the unit tests
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'oracle'
+          cache: maven
+      - name: Run Tests
+        run: mvn test
