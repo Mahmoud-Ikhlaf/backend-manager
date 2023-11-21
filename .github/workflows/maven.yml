@@ -67,6 +67,8 @@ jobs:
           java-version: '21'
           distribution: 'oracle'
           cache: maven
+        env:
+          spring.datasource.url: jdbc:postgresql://localhost:5433/backend
       - name: Run Tests
         run: mvn test
 
