@@ -67,16 +67,13 @@ jobs:
           java-version: '21'
           distribution: 'oracle'
           cache: maven
-        env:
-          SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:5433/backend"
-          SPRING_DATASOURCE_USERNAME: "postgres"
-          SPRING_DATASOURCE_PASSWORD: "postgres"
       - name: Run Tests
         run: |
-          echo "SPRING_DATASOURCE_URL: $SPRING_DATASOURCE_URL"
-          echo "SPRING_DATASOURCE_USERNAME: $SPRING_DATASOURCE_USERNAME"
-          echo "SPRING_DATASOURCE_PASSWORD: $SPRING_DATASOURCE_PASSWORD"
+          export SPRING_DATASOURCE_URL='jdbc:postgresql://localhost:5433/backend'
+          export SPRING_DATASOURCE_USERNAME='postgres'
+          export SPRING_DATASOURCE_PASSWORD='postgres'
           mvn test
+  
 
   deploy:
     needs: test
