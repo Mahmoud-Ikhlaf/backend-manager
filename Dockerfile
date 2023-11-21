@@ -2,6 +2,6 @@ FROM openjdk:21
 
 EXPOSE 8080
 
-ADD target/backend-manager.jar backend-manager.jar
+ADD target/mahoot-images.jar mahoot-images.jar
 
-ENTRYPOINT ["java", "-jar", "/backend-manager.jar"]
+ENTRYPOINT ["java", "-jar", "/mahoot-images.jar"]

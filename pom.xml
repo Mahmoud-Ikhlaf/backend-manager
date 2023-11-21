@@ -87,7 +87,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>backend-manager</finalName>
+        <finalName>mahoot-images</finalName>
     </build>
 
 </project>
