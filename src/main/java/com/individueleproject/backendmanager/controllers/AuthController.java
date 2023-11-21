@@ -5,6 +5,13 @@ import com.individueleproject.backendmanager.models.*;
 import com.individueleproject.backendmanager.services.AuthService;
 import com.individueleproject.backendmanager.services.RefreshTokenService;
 import com.individueleproject.backendmanager.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -15,18 +22,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@Tag(name = "Authentication/Authorization", description = "Endpoints for Authentication/Authorization")
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
 
+    @Operation(
+            summary = "Login with username and password.",
+            description = "Login with username and password and retrieve a JWT token and a refresh cookie.")
+    @Schema(hidden = true)
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return authService.login(request.getUsername(), request.getPassword());
     }
 
+    @Operation(
+            summary = "Register with username, email and password.",
+            description = "Register with username, email and password. This will create the account.")
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequest request) {
 
@@ -41,7 +55,7 @@ public class AuthController {
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        User user = userService.saveUser(User.builder()
+        userService.saveUser(User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(encodedPassword)
@@ -50,11 +64,17 @@ public class AuthController {
         return "Gebruiker is succesvol geregistreerd!";
     }
 
+    @Operation(
+            summary = "Refresh a JWT token.",
+            description = "Refresh a JWT token. Send a refresh cookie and if cookie is valid it will return a new JWT token.")
     @GetMapping("/refresh")
     public RefreshResponse refresh(HttpServletRequest request) {
         return refreshTokenService.refreshToken(request);
     }
 
+    @Operation(
+            summary = "Logout",
+            description = "Logout with refresh cookie. It will delete the refresh cookie.")
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         return authService.logout(request);

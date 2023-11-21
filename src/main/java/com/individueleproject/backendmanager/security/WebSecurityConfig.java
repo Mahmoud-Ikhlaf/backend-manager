@@ -2,13 +2,9 @@ package com.individueleproject.backendmanager.security;
 
 import com.individueleproject.backendmanager.security.jwt.JwtAuthenticationFilter;
 import com.individueleproject.backendmanager.security.services.CustomUserDetailService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,19 +12,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.io.IOException;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -41,15 +40,6 @@ public class WebSecurityConfig {
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http
-                /*.cors(cors ->
-                        cors.configurationSource(request -> {
-                            CorsConfiguration configuration = new CorsConfiguration();
-                            configuration.addAllowedOrigin("http://localhost:5173");
-                            configuration.setAllowCredentials(true);
-                            configuration.addAllowedHeader("Authorization");
-                            return configuration;
-                        }))*/
-/*                .cors(Customizer.withDefaults())*/
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception ->
@@ -59,6 +49,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                             .requestMatchers("/api/v1/auth/**").permitAll()
+                            .requestMatchers("/swagger-ui/**").permitAll()
+                            .requestMatchers("/v3/api-docs").permitAll()
                             .anyRequest().authenticated()
                 )
                 .sessionManagement((sessionManagement) ->
@@ -82,21 +74,34 @@ public class WebSecurityConfig {
         return builder.build();
     }
 
-/*    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("http://localhost:5173").allowCredentials(true);
+            }
+        };
+    }
 
-        configuration.addAllowedOrigin("http://localhost:5173");
+    @Bean
+    public OpenAPI myOpenAPI() {
+        Server devServer = new Server();
+        devServer.setUrl("http://localhost:8080");
+        devServer.setDescription("Server URL in Development environment");
+//
+//        Server prodServer = new Server();
+//        prodServer.setUrl("http://prod");
+//        prodServer.setDescription("Server URL in Production environment");
 
-        configuration.addAllowedMethod(HttpMethod.GET);
-        configuration.addAllowedMethod(HttpMethod.POST);
-        configuration.addAllowedMethod(HttpMethod.PUT);
-        configuration.addAllowedMethod(HttpMethod.DELETE);
-        configuration.addAllowedHeader("Authorization");
-        configuration.setAllowCredentials(true);
+        License mitLicense = new License().name("MIT License").url("https://choosealicense.com/licenses/mit/");
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }*/
+        Info info = new Info()
+                .title("Mahoot API")
+                .version("1.0")
+                .description("This API exposes endpoints for the Mahoot backend manager")
+                .license(mitLicense);
+
+        return new OpenAPI().info(info).servers(List.of(devServer));
+    }
 }
