@@ -73,7 +73,6 @@ jobs:
           export SPRING_DATASOURCE_USERNAME='postgres'
           export SPRING_DATASOURCE_PASSWORD='postgres'
           mvn test
-  
 
   deploy:
     needs: test
@@ -82,12 +81,16 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Build and push Docker image
-        uses: mr-smithers-excellent/docker-build-push@v5
+      - name: Login to Docker Hub
+        uses: docker/login-action
         with:
-          image: ${{ secrets.DOCKER_USERNAME }}/mahoot-images
-          tags: backend
-          registry: docker.io
-          dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: backend
