@@ -43,6 +43,11 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean install -DskipTests
+    - name: Upload JAR as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: mahoot-images
+        path: target/mahoot-images.jar
 
 # Executes the unit tests
   test:
@@ -78,6 +83,11 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: mahoot-images
+
       - name: Check out the repo
         uses: actions/checkout@v3
 
@@ -93,4 +103,4 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: backend
+          tags: ${{ secrets.DOCKER_USERNAME }}/mahoot-images:backend
