@@ -76,10 +76,10 @@ jobs:
           java-version: '21'
           distribution: 'oracle'
           cache: maven
-      - name: Setup maven
-        uses: stCarolas/setup-maven@v4.5
-        with:
-          maven-version: 3.9.4
+      #    - name: Setup maven
+      #      uses: stCarolas/setup-maven@v4.5
+      #      with:
+      #        maven-version: 3.9.4
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -111,6 +111,10 @@ jobs:
           java-version: '21'
           distribution: 'oracle'
           cache: maven
+      - name: Setup maven
+        uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: 3.9.4
       - name: Analyze with SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
