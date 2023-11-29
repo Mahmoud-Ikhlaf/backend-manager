@@ -41,6 +41,16 @@ jobs:
         java-version: '21'
         distribution: 'oracle'
         cache: maven
+#    - name: Setup maven
+#      uses: stCarolas/setup-maven@v4.5
+#      with:
+#        maven-version: 3.9.4
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
     - name: Build with Maven
       run: mvn clean install -DskipTests
     - name: Upload JAR as artifact
@@ -72,12 +82,25 @@ jobs:
           java-version: '21'
           distribution: 'oracle'
           cache: maven
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Run Tests
         run: |
           export SPRING_DATASOURCE_URL='jdbc:postgresql://localhost:5433/backend'
           export SPRING_DATASOURCE_USERNAME='postgres'
           export SPRING_DATASOURCE_PASSWORD='postgres'
           mvn test
+      - name: Report
+        uses: dorny/test-reporter@v1
+        with:
+          name: Maven Tests
+          path: target/surefire-reports/*.xml
+          reporter: java-junit
+          fail-on-error: true
 
   deploy:
     needs: test
