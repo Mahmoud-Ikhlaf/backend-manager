@@ -16,6 +16,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  statuses: write
+  checks: write
+
 # Jobs
 jobs:
 # Build job
