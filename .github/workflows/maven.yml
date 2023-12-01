@@ -172,3 +172,15 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/mahoot-images:backend
+
+  digitalocean:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update backend on server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_KEY }}
+          script: ./cicd.sh
