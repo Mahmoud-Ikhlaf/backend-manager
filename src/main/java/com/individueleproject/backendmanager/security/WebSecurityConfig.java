@@ -89,10 +89,10 @@ public class WebSecurityConfig {
         Server devServer = new Server();
         devServer.setUrl("http://localhost:8080");
         devServer.setDescription("Server URL in Development environment");
-//
-//        Server prodServer = new Server();
-//        prodServer.setUrl("http://prod");
-//        prodServer.setDescription("Server URL in Production environment");
+
+        Server prodServer = new Server();
+        prodServer.setUrl("http://142.93.139.197:8080");
+        prodServer.setDescription("Server URL in Production environment");
 
         License mitLicense = new License().name("MIT License").url("https://choosealicense.com/licenses/mit/");
 
