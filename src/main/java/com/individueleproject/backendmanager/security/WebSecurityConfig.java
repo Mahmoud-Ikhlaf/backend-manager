@@ -102,6 +102,6 @@ public class WebSecurityConfig {
                 .description("This API exposes endpoints for the Mahoot backend manager")
                 .license(mitLicense);
 
-        return new OpenAPI().info(info).servers(List.of(devServer));
+        return new OpenAPI().info(info).servers(List.of(devServer, prodServer));
     }
 }
