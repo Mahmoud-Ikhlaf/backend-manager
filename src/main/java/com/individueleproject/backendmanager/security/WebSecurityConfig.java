@@ -50,7 +50,8 @@ public class WebSecurityConfig {
                         authorizeRequests
                             .requestMatchers("/api/v1/auth/**").permitAll()
                             .requestMatchers("/swagger-ui/**").permitAll()
-                            .requestMatchers("/v3/api-docs/**").permitAll()
+                            .requestMatchers("/api-docs/**").permitAll()
+                            .requestMatchers("/").permitAll()
                             .anyRequest().authenticated()
                 )
                 .sessionManagement((sessionManagement) ->
@@ -79,7 +80,7 @@ public class WebSecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:5000", "http://142.93.139.197").allowCredentials(true);
+                registry.addMapping("/**").allowedOrigins("http://localhost:5000", "http://mahoot.tech", "http://www.mahoot.tech").allowCredentials(true);
             }
         };
     }
@@ -91,7 +92,7 @@ public class WebSecurityConfig {
         devServer.setDescription("Server URL in Development environment");
 
         Server prodServer = new Server();
-        prodServer.setUrl("http://142.93.139.197:8080");
+        prodServer.setUrl("http://api.mahoot.tech");
         prodServer.setDescription("Server URL in Production environment");
 
         License mitLicense = new License().name("MIT License").url("https://choosealicense.com/licenses/mit/");
