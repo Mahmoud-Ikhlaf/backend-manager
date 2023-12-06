@@ -27,7 +27,7 @@ public class SwaggerTest {
 
     @Test
     void anyoneCanAccessSwaggerApiDocsEndpoint() throws Exception {
-        api.perform(get("/v3/api-docs"))
+        api.perform(get("/api-docs"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsStringIgnoringCase("Mahoot API")));
     }
