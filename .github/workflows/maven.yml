@@ -144,7 +144,7 @@ jobs:
           export SPRING_DATASOURCE_URL='jdbc:postgresql://localhost:5433/backend'
           export SPRING_DATASOURCE_USERNAME='postgres'
           export SPRING_DATASOURCE_PASSWORD='postgres'
-          mvn verify sonar:sonar -Dsonar.projectKey=Mahmoud-Ikhlaf_backend-manager
+          mvn verify sonar:sonar -Dsonar.projectKey=Mahmoud-Ikhlaf_backend-manager -Dsonar.qualitygate.wait=true
 
   deploy:
     needs: sonarcloud
