@@ -1,4 +1,4 @@
-package com.individueleproject.backendmanager.unittests.controllers;
+package com.individueleproject.backendmanager.unit_tests.controllers;
 
 import com.individueleproject.backendmanager.controllers.AuthController;
 import com.individueleproject.backendmanager.entity.User;
@@ -6,14 +6,12 @@ import com.individueleproject.backendmanager.models.LoginRequest;
 import com.individueleproject.backendmanager.models.LoginResponse;
 import com.individueleproject.backendmanager.models.RegisterRequest;
 import com.individueleproject.backendmanager.services.AuthService;
-import com.individueleproject.backendmanager.services.RefreshTokenService;
 import com.individueleproject.backendmanager.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -45,7 +43,7 @@ class AuthControllerTest {
     PasswordEncoder passwordEncoder;
 
     @Test
-    public void LoginUserSuccess() {
+    public void loginUserSuccess() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "test").maxAge(24 * 60 * 60).httpOnly(true).build();
@@ -81,7 +79,7 @@ class AuthControllerTest {
     }
 
     @Test
-    public void LoginUserFailed() {
+    public void loginUserFailed() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
