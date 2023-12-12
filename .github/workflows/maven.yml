@@ -57,16 +57,6 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: 'postgres'
-          POSTGRES_PASSWORD: 'postgres'
-          POSTGRES_DB: 'backend'
-        ports:
-          - 5433:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     
     steps:
       - uses: actions/checkout@v3
@@ -87,11 +77,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Run Tests
-        run: |
-          export SPRING_DATASOURCE_URL='jdbc:postgresql://localhost:5433/backend'
-          export SPRING_DATASOURCE_USERNAME='postgres'
-          export SPRING_DATASOURCE_PASSWORD='postgres'
-          mvn test
+        run: mvn test
       - name: Report
         uses: dorny/test-reporter@v1
         with:
