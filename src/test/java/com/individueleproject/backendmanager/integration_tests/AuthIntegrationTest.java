@@ -9,6 +9,7 @@ import com.individueleproject.backendmanager.repository.RefreshTokenRepository;
 import com.individueleproject.backendmanager.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
@@ -53,7 +54,7 @@ public class AuthIntegrationTest {
     private LoginRequest loginRequest;
     private RegisterRequest registerRequest;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         user = User.builder()
                 .id(1L)
