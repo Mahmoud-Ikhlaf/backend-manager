@@ -80,6 +80,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void givenLoginCredential_whenLogin_thenStatus200() throws Exception {
 
         mvc.perform(post(API_ENDPOINT + "/login")
@@ -91,6 +92,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void givenLoginCredential_whenLogin_thenStatus401() throws Exception {
 
         mvc.perform(post(API_ENDPOINT + "/login")
@@ -100,6 +102,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void givenRegisterData_whenRegister_thenStatus200() throws Exception {
 
         mvc.perform(post(API_ENDPOINT + "/register")
@@ -110,6 +113,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void givenRegisterData_whenRegister_thenUsernameAlreadyExists() throws Exception {
 
         mvc.perform(post(API_ENDPOINT + "/register")
@@ -120,6 +124,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void givenRegisterData_whenRegister_thenEmailAlreadyExists() throws Exception {
 
         mvc.perform(post(API_ENDPOINT + "/register")
