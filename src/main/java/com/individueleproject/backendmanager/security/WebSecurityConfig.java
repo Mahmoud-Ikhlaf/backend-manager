@@ -2,6 +2,9 @@ package com.individueleproject.backendmanager.security;
 
 import com.individueleproject.backendmanager.security.jwt.JwtAuthenticationFilter;
 import com.individueleproject.backendmanager.security.services.CustomUserDetailService;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,13 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -80,7 +79,13 @@ public class WebSecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:5000", "http://mahoot.tech", "http://www.mahoot.tech").allowCredentials(true);
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:5000","http://mahoot.tech", "http://www.mahoot.tech")
+                        .allowCredentials(true)
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("Authorization", "Content-Type")
+                        .exposedHeaders("Authorization", "Content-Type")
+                        .maxAge(3600);
             }
         };
     }
@@ -97,12 +102,23 @@ public class WebSecurityConfig {
 
         License mitLicense = new License().name("MIT License").url("https://choosealicense.com/licenses/mit/");
 
+        SecurityScheme securityScheme = new SecurityScheme()
+                .name("JWT")
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("JWT");
+
         Info info = new Info()
                 .title("Mahoot API")
                 .version("1.0")
                 .description("This API exposes endpoints for the Mahoot backend manager")
                 .license(mitLicense);
 
-        return new OpenAPI().info(info).servers(List.of(devServer, prodServer));
+        return new OpenAPI()
+                .info(info)
+                .servers(List.of(devServer, prodServer))
+                .components(new Components().addSecuritySchemes("JWT", securityScheme))
+                .addSecurityItem(securityRequirement);
     }
 }

@@ -6,11 +6,13 @@ import com.individueleproject.backendmanager.exceptions.RefreshTokenException;
 import com.individueleproject.backendmanager.models.RefreshResponse;
 import com.individueleproject.backendmanager.repository.RefreshTokenRepository;
 import com.individueleproject.backendmanager.security.jwt.JwtIssuer;
+import com.individueleproject.backendmanager.services.interfaces.IRefreshTokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 import org.springframework.http.ResponseCookie;
@@ -22,7 +24,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class RefreshTokenService {
+public class RefreshTokenService implements IRefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtIssuer jwtIssuer;
 
@@ -73,17 +75,20 @@ public class RefreshTokenService {
         return ResponseCookie.from("refreshToken", null).httpOnly(true).build();
     }
 
-    private void updateToken(RefreshToken token) {
+
+    public void updateToken(RefreshToken token) {
         token.setExpiryDate(ZonedDateTime.now(ZoneId.systemDefault()).plusMinutes(expiration));
         refreshTokenRepository.save(token);
     }
 
-    private boolean isTokenExpired(ZonedDateTime expirationTime) {
+    public boolean isTokenExpired(ZonedDateTime expirationTime) {
         return expirationTime.isBefore(ZonedDateTime.now(ZoneId.systemDefault()));
     }
 
-    public Optional<RefreshToken> findTokenById(Long id) {
-        return refreshTokenRepository.findById(id);
+    public Optional<RefreshToken> findTokenByUserId(Long id) {
+        User user = User.builder().id(id).build();
+        Example<RefreshToken> token = Example.of(RefreshToken.builder().user(user).build());
+        return refreshTokenRepository.findOne(token);
     }
 
     @Transactional

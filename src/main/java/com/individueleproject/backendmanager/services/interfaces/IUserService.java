@@ -1,4 +1,4 @@
-package com.individueleproject.backendmanager.services;
+package com.individueleproject.backendmanager.services.interfaces;
 
 import com.individueleproject.backendmanager.entity.User;
 

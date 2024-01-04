@@ -102,7 +102,7 @@ public class RefreshTokenServiceTest {
         Optional<RefreshToken> token = Optional.ofNullable(RefreshToken.builder().token("test").build());
         when(refreshTokenRepository.findById(any(Long.class))).thenReturn(token);
 
-        Optional<RefreshToken> response = refreshTokenService.findTokenById(id);
+        Optional<RefreshToken> response = refreshTokenService.findTokenByUserId(id);
 
         assertNotNull(response);
         assertEquals(response.get().getToken(), token.get().getToken());
@@ -113,7 +113,7 @@ public class RefreshTokenServiceTest {
         Long id = 1L;
         when(refreshTokenRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
-        Optional<RefreshToken> response = refreshTokenService.findTokenById(id);
+        Optional<RefreshToken> response = refreshTokenService.findTokenByUserId(id);
 
         assertFalse(response.isPresent());
     }

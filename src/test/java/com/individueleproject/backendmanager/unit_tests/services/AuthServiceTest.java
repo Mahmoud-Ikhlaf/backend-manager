@@ -83,7 +83,7 @@ class AuthServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(UserPrincipal.builder().userId(1L).username("test").password("test").build());
         when(userService.findByUsername(any(String.class))).thenReturn(Optional.of(user));
-        when(refreshTokenService.findTokenById(any(Long.class))).thenReturn(Optional.of(token));
+        when(refreshTokenService.findTokenByUserId(any(Long.class))).thenReturn(Optional.of(token));
         when(refreshTokenService.generateCookie(any(String.class))).thenReturn(refreshCookie);
         when(jwtIssuer.issue(any(Long.class), any(String.class))).thenReturn("test");
 

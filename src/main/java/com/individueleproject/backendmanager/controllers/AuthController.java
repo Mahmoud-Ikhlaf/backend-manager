@@ -30,16 +30,15 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @Operation(
-            summary = "Login with username and password.",
-            description = "Login with username and password and retrieve a JWT token and a refresh cookie.")
-    @Schema(hidden = true)
+            summary = "Login with username and password",
+            description = "Login with username and password and retrieve a JWT token and a refresh cookie")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return authService.login(request.getUsername(), request.getPassword());
     }
 
     @Operation(
-            summary = "Register with username, email and password.",
+            summary = "Register with username, email and password",
             description = "Register with username, email and password. This will create the account.")
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequest request) {
@@ -65,8 +64,8 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "Refresh a JWT token.",
-            description = "Refresh a JWT token. Send a refresh cookie and if cookie is valid it will return a new JWT token.")
+            summary = "Refresh a JWT token",
+            description = "Refresh a JWT token. Send a refresh cookie and if cookie is valid it will return a new JWT token")
     @GetMapping("/refresh")
     public RefreshResponse refresh(HttpServletRequest request) {
         return refreshTokenService.refreshToken(request);
@@ -74,7 +73,7 @@ public class AuthController {
 
     @Operation(
             summary = "Logout",
-            description = "Logout with refresh cookie. It will delete the refresh cookie.")
+            description = "Logout with refresh cookie. It will delete the refresh cookie")
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         return authService.logout(request);

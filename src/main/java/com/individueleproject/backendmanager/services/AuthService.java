@@ -2,16 +2,13 @@ package com.individueleproject.backendmanager.services;
 
 import com.individueleproject.backendmanager.entity.RefreshToken;
 import com.individueleproject.backendmanager.entity.User;
-import com.individueleproject.backendmanager.exceptions.ErrorMessage;
-import com.individueleproject.backendmanager.exceptions.RefreshTokenException;
 import com.individueleproject.backendmanager.models.LoginResponse;
 import com.individueleproject.backendmanager.models.MessageResponse;
 import com.individueleproject.backendmanager.repository.RefreshTokenRepository;
 import com.individueleproject.backendmanager.security.jwt.JwtIssuer;
 import com.individueleproject.backendmanager.security.services.UserPrincipal;
-import jakarta.servlet.http.Cookie;
+import com.individueleproject.backendmanager.services.interfaces.IAuthService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -21,19 +18,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpResponse;
-import java.util.Date;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthService implements IAuthService {
     private final JwtIssuer jwtIssuer;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
+
     public ResponseEntity<?> login(String username, String password) {
         var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
@@ -46,13 +41,19 @@ public class AuthService {
             user = userOptional.get();
         }
         var token = jwtIssuer.issue(principal.getUserId(), principal.getUsername());
-        Optional<RefreshToken> tokenOpt =  refreshTokenService.findTokenById(principal.getUserId());
+        Optional<RefreshToken> tokenOpt =  refreshTokenService.findTokenByUserId(principal.getUserId());
         String refreshToken = null;
         if (tokenOpt.isEmpty()) {
             refreshToken = refreshTokenService.createToken(user);
         } else {
-            refreshToken = tokenOpt.get().getToken();
+            if (refreshTokenService.isTokenExpired(tokenOpt.get().getExpiryDate())) {
+                refreshTokenRepository.delete(tokenOpt.get());
+                refreshToken = refreshTokenService.createToken(user);
+            } else {
+                refreshToken = tokenOpt.get().getToken();
+            }
         }
+
         ResponseCookie refreshCookie = refreshTokenService.generateCookie(refreshToken);
 
         return ResponseEntity.ok()
@@ -61,7 +62,7 @@ public class AuthService {
     }
 
     public ResponseEntity<?> logout(HttpServletRequest request) {
-            String refreshToken = refreshTokenService.getCookieValueByName(request);
+        String refreshToken = refreshTokenService.getCookieValueByName(request);
         var tokenOptional = refreshTokenRepository.findRefreshTokenEntityByToken(refreshToken);
 
         if (tokenOptional.isPresent()) {
