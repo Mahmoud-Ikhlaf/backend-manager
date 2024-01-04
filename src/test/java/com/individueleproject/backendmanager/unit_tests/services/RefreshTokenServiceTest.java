@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
 import org.springframework.http.ResponseCookie;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -100,7 +101,7 @@ public class RefreshTokenServiceTest {
     public void findTokenByIdSuccess() {
         Long id = 1L;
         Optional<RefreshToken> token = Optional.ofNullable(RefreshToken.builder().token("test").build());
-        when(refreshTokenRepository.findById(any(Long.class))).thenReturn(token);
+        when(refreshTokenRepository.findOne(any(Example.class))).thenReturn(token);
 
         Optional<RefreshToken> response = refreshTokenService.findTokenByUserId(id);
 
@@ -111,7 +112,6 @@ public class RefreshTokenServiceTest {
     @Test
     public void findTokenByIdFail() {
         Long id = 1L;
-        when(refreshTokenRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         Optional<RefreshToken> response = refreshTokenService.findTokenByUserId(id);
 
